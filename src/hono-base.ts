@@ -7,7 +7,7 @@
 import { compose } from './compose'
 import { Context } from './context'
 import type { ExecutionContext } from './context'
-import type { Router } from './router'
+import type { Result, Router } from './router'
 import { METHODS, METHOD_NAME_ALL, METHOD_NAME_ALL_LOWERCASE } from './router'
 import type {
   Env,
@@ -42,6 +42,13 @@ const errorHandler: ErrorHandler = (err, c) => {
 }
 
 type GetPath<E extends Env> = (request: Request, options?: { env?: E['Bindings'] }) => string
+
+const matchResultHasRoute = (matchResult: Result<[H, RouterRoute]>): boolean => {
+  return matchResult[0].some(([handler]) => {
+    const route = handler[1]
+    return !route.path.endsWith('*')
+  })
+}
 
 export type HonoOptions<E extends Env> = {
   /**
@@ -409,11 +416,20 @@ class Hono<
         new Response(null, await this.#dispatch(request, executionCtx, env, 'GET')))()
     }
 
-    const path = this.getPath(request, { env })
-    const matchResult = this.router.match(method, path)
+    let path = this.getPath(request, { env })
+    const contextPath = path
+    let matchResult = this.router.match(method, path)
+    if (path.length > 1 && path.at(-1) === '/' && !matchResultHasRoute(matchResult)) {
+      const pathWithoutTrailingSlash = path.slice(0, -1)
+      const matchResultWithoutTrailingSlash = this.router.match(method, pathWithoutTrailingSlash)
+      if (matchResultHasRoute(matchResultWithoutTrailingSlash)) {
+        path = pathWithoutTrailingSlash
+        matchResult = matchResultWithoutTrailingSlash
+      }
+    }
 
     const c = new Context(request, {
-      path,
+      path: contextPath,
       matchResult,
       env,
       executionCtx,

@@ -138,3 +138,14 @@ out
 # Claude Code local files
 CLAUDE.local.md
 settings.local.json
+
+# koji operator tooling (not part of the tenant repo)
+koji-build.sh
+src/agents/prompt_fragments/
+package-lock.json
+.verify-result
+.devd/
+koji-test-repo-*
+node-compile-cache
+xcrun_db
+.claude/

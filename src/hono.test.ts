@@ -315,13 +315,13 @@ describe('Options', () => {
         return c.text('/hello')
       })
 
-      it('/hello/ is not found', async () => {
+      it('/hello and /hello/ are treated as the same', async () => {
         let res = await app.request('http://localhost/hello')
         expect(res).not.toBeNull()
         expect(res.status).toBe(200)
         res = await app.request('http://localhost/hello/')
         expect(res).not.toBeNull()
-        expect(res.status).toBe(404)
+        expect(res.status).toBe(200)
       })
     })
 
@@ -340,6 +340,32 @@ describe('Options', () => {
         expect(res).not.toBeNull()
         expect(res.status).toBe(404)
       })
+    })
+
+    it('uses the route without a trailing slash when middleware matches the request first', async () => {
+      const app = new Hono()
+      app.use('*', async (c, next) => {
+        await next()
+        c.header('x-message', 'middleware')
+      })
+      app.get('/hello', (c) => c.text('hello'))
+
+      const res = await app.request('http://localhost/hello/')
+
+      expect(res.status).toBe(200)
+      expect(res.headers.get('x-message')).toBe('middleware')
+      expect(await res.text()).toBe('hello')
+    })
+
+    it('prefers the route with a trailing slash when it is registered', async () => {
+      const app = new Hono()
+      app.get('/hello', (c) => c.text('without slash'))
+      app.get('/hello/', (c) => c.text('with slash'))
+
+      const res = await app.request('http://localhost/hello/')
+
+      expect(res.status).toBe(200)
+      expect(await res.text()).toBe('with slash')
     })
 
     describe('strict is false', () => {
@@ -454,7 +480,8 @@ describe('Routing', () => {
     expect(await res.text()).toBe('post /book')
 
     res = await app.request('http://localhost/book/', { method: 'GET' })
-    expect(res.status).toBe(404)
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('get /book')
 
     res = await app.request('http://localhost/user/login', { method: 'GET' })
     expect(res.status).toBe(200)

@@ -1,0 +1,3 @@
+verify:
+  test: bun test src/trailing-slash.test.ts src/router/common.case.test.ts src/hono.test.ts
+  uat: bun test src/trailing-slash.test.ts

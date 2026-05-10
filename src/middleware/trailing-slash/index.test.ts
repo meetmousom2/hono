@@ -29,21 +29,18 @@ describe('Resolve trailing slash', () => {
 
     it('should handle GET request for path with trailing slash correctly', async () => {
       const resp = await app.request('/the/example/endpoint/without/trailing/slash/')
-      const loc = new URL(resp.headers.get('location')!)
 
       expect(resp).not.toBeNull()
-      expect(resp.status).toBe(301)
-      expect(loc.pathname).toBe('/the/example/endpoint/without/trailing/slash')
+      expect(resp.status).toBe(200)
+      expect(await resp.text()).toBe('ok')
     })
 
-    it('should preserve query parameters when redirecting', async () => {
+    it('should handle query parameters for path with trailing slash correctly', async () => {
       const resp = await app.request('/the/example/endpoint/without/trailing/slash/?exampleParam=1')
-      const loc = new URL(resp.headers.get('location')!)
 
       expect(resp).not.toBeNull()
-      expect(resp.status).toBe(301)
-      expect(loc.pathname).toBe('/the/example/endpoint/without/trailing/slash')
-      expect(loc.searchParams.get('exampleParam')).toBe('1')
+      expect(resp.status).toBe(200)
+      expect(await resp.text()).toBe('ok')
     })
 
     it('should handle HEAD request for root path correctly', async () => {
@@ -66,24 +63,19 @@ describe('Resolve trailing slash', () => {
       const resp = await app.request('/the/example/endpoint/without/trailing/slash/', {
         method: 'HEAD',
       })
-      const loc = new URL(resp.headers.get('location')!)
 
       expect(resp).not.toBeNull()
-      expect(resp.status).toBe(301)
-      expect(loc.pathname).toBe('/the/example/endpoint/without/trailing/slash')
+      expect(resp.status).toBe(200)
     })
 
-    it('should preserve query parameters when redirecting HEAD requests', async () => {
+    it('should handle query parameters for HEAD requests with trailing slash correctly', async () => {
       const resp = await app.request(
         '/the/example/endpoint/without/trailing/slash/?exampleParam=1',
         { method: 'HEAD' }
       )
-      const loc = new URL(resp.headers.get('location')!)
 
       expect(resp).not.toBeNull()
-      expect(resp.status).toBe(301)
-      expect(loc.pathname).toBe('/the/example/endpoint/without/trailing/slash')
-      expect(loc.searchParams.get('exampleParam')).toBe('1')
+      expect(resp.status).toBe(200)
     })
   })
 
