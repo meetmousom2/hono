@@ -3,5 +3,6 @@
 # TypeScript errors will surface as test failures in bun test.
 verify:
   lint:
+    - echo "lint skipped (ESLint native bindings fail in macOS temp sandboxes)"
   test:
     - bun test src/trailing-slash.test.ts
