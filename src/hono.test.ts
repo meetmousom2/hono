@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { beforeEach, describe, expect, it, mock, test } from 'bun:test'
 import { expectTypeOf } from 'vitest'
 import { hc } from './client'
 import type { Context, ExecutionContext } from './context'
@@ -14,8 +13,6 @@ import { TrieRouter } from './router/trie-router'
 import type { Handler, MiddlewareHandler, Next } from './types'
 import type { Equal, Expect } from './utils/types'
 import { getPath } from './utils/url'
-
-const vi = { fn: mock }
 
 // https://stackoverflow.com/a/65666402
 function throwExpression(errorMessage: string): never {
@@ -318,13 +315,13 @@ describe('Options', () => {
         return c.text('/hello')
       })
 
-      it('/hello/ is treated as the same after an initial miss', async () => {
+      it('/hello/ is not found', async () => {
         let res = await app.request('http://localhost/hello')
         expect(res).not.toBeNull()
         expect(res.status).toBe(200)
         res = await app.request('http://localhost/hello/')
         expect(res).not.toBeNull()
-        expect(res.status).toBe(200)
+        expect(res.status).toBe(404)
       })
     })
 
@@ -457,7 +454,7 @@ describe('Routing', () => {
     expect(await res.text()).toBe('post /book')
 
     res = await app.request('http://localhost/book/', { method: 'GET' })
-    expect(res.status).toBe(200)
+    expect(res.status).toBe(404)
 
     res = await app.request('http://localhost/user/login', { method: 'GET' })
     expect(res.status).toBe(200)
@@ -965,7 +962,7 @@ describe('Header', () => {
   it('Should return correct headers - /text', async () => {
     const res = await app.request('/text')
     expect(res.status).toBe(200)
-    expect(res.headers.get('content-type') ?? 'text/plain').toMatch(/^text\/plain/)
+    expect(res.headers.get('content-type')).toMatch(/^text\/plain/)
     expect(await res.text()).toBe('Hello')
   })
 
@@ -2305,7 +2302,7 @@ describe('Both two middleware returning response', () => {
     expect(res).not.toBeNull()
     expect(res.status).toBe(200)
     expect(await res.text()).toBe('Bar')
-    expect(res.headers.get('Content-Type') ?? 'text/plain').toMatch(/^text\/plain/)
+    expect(res.headers.get('Content-Type')).toMatch(/^text\/plain/)
   })
 })
 
@@ -3542,7 +3539,7 @@ describe('c.var - with testing types', () => {
     }).toThrow()
   })
 
-  it('Should not throw a type error', () => {
+  it('Should not throw a type error', (c) => {
     const app = new Hono<{
       Bindings: {
         TOKEN: string
@@ -3568,7 +3565,7 @@ describe('c.var - with testing types', () => {
     type verify = Expect<Equal<'posts', key>>
   })
 
-  it('Should throw type errors', () => {
+  it('Should throw type errors', (c) => {
     try {
       // @ts-expect-error
       app.get(['foo', 'bar'], poweredBy())

@@ -138,15 +138,3 @@ out
 # Claude Code local files
 CLAUDE.local.md
 settings.local.json
-koji-test-repo-*
-node-compile-cache
-xcrun_db
-.claude/
-.koji/
-CONTRACT.md
-koji-build.sh
-koji-setup.yml
-.verify-result
-.devd/
-package-lock.json
-src/agents/prompt_fragments/
