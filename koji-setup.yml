@@ -1,5 +1,6 @@
 # koji-setup.yml — overrides auto-detected verify commands for the koji BUILD agent.
-# See: https://github.com/meetmousom/koji
 verify:
+  lint:
+    - node_modules/.bin/tsc --noEmit
   test:
     - bun test src/trailing-slash.test.ts
