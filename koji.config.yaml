@@ -1,0 +1,4 @@
+build:
+  agent: opencode
+  model: gpt-5.1-codex-mini
+  provider: openai
