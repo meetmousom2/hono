@@ -410,7 +410,10 @@ class Hono<
     }
 
     const path = this.getPath(request, { env })
-    const matchResult = this.router.match(method, path)
+    let matchResult = this.router.match(method, path)
+    if (matchResult[0].length === 0 && path.length > 1 && path.at(-1) === '/') {
+      matchResult = this.router.match(method, path.slice(0, -1))
+    }
 
     const c = new Context(request, {
       path,
