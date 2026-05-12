@@ -1,11 +1,11 @@
 # koji-setup.yml — overrides auto-detected verify commands for the koji BUILD agent.
-# Lint is skipped because ESLint native bindings fail in macOS temp sandboxes.
-# TypeScript errors will surface as test failures in bun test.
+# Uses vitest (the project's actual test runner) not bun test, to avoid bun-compat
+# issues with Chai-style matchers (instanceOf) and Response body consumption semantics.
 verify:
   lint:
     - echo "lint skipped (ESLint native bindings fail in macOS temp sandboxes)"
   test:
-    - bun test src/context.test.ts
+    - npx vitest run src/context.test.ts
   uat:
-    cmd: bun test src/context.test.ts
+    cmd: npx vitest run src/context.test.ts
     required: false
