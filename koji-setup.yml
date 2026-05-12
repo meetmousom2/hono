@@ -5,4 +5,7 @@ verify:
   lint:
     - echo "lint skipped (ESLint native bindings fail in macOS temp sandboxes)"
   test:
-    - bun test src/trailing-slash.test.ts
+    - bun test src/context.test.ts
+  uat:
+    cmd: bun test src/context.test.ts
+    required: false
