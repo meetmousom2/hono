@@ -70,6 +70,34 @@ describe('Context', () => {
     expect(res.headers.get('X-Custom')).toBe('Message')
   })
 
+  it('c.json() with undefined returns null body', async () => {
+    const res = c.json(undefined)
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Content-Type')).toMatch('application/json')
+    expect(await res.json()).toBe(null)
+  })
+
+  it('c.json() with null still returns null body', async () => {
+    const res = c.json(null)
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Content-Type')).toMatch('application/json')
+    expect(await res.json()).toBe(null)
+  })
+
+  it('c.json() with false still returns false body', async () => {
+    const res = c.json(false)
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Content-Type')).toMatch('application/json')
+    expect(await res.json()).toBe(false)
+  })
+
+  it('c.json() with empty object still returns empty object body', async () => {
+    const res = c.json({})
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Content-Type')).toMatch('application/json')
+    expect(await res.json()).toEqual({})
+  })
+
   it('c.html()', async () => {
     const res: Response = c.html('<h1>Hello! Hono!</h1>', 201, { 'X-Custom': 'Message' })
     expect(res.status).toBe(201)
@@ -160,7 +188,7 @@ describe('Context', () => {
 
   it('c.notFound()', async () => {
     const res = c.notFound()
-    expect(res).instanceOf(Response)
+    expect(res).toBeInstanceOf(Response)
   })
 
   it('Should set headers if already this.#headers is created by `c.header()`', async () => {
@@ -252,6 +280,7 @@ describe('Context', () => {
       'x-custom3': 'Message3',
       'x-custom2': 'Message2-Override',
     })
+    const resClone = res.clone()
     expect(res.headers.get('x-Custom1')).toBe('Message1')
     expect(res.headers.get('x-Custom2')).toBe('Message2-Override')
     expect(res.headers.get('x-Custom3')).toBe('Message3')
@@ -263,7 +292,7 @@ describe('Context', () => {
     c.status(202)
     expect(c.res.headers.get('X-Custom4')).toBe('Message4')
     expect(c.res.status).toBe(201)
-    expect(await res.text()).toBe('this is body')
+    expect(await resClone.text()).toBe('this is body')
   })
 
   it('Inherit current status if not specified', async () => {
