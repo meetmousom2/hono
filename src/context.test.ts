@@ -70,6 +70,31 @@ describe('Context', () => {
     expect(res.headers.get('X-Custom')).toBe('Message')
   })
 
+  it('c.json() with undefined returns 200 without body', async () => {
+    const res = c.json(undefined)
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('')
+  })
+
+  it('c.json() with undefined omits content-type', async () => {
+    const res = c.json(undefined)
+    expect(res.headers.get('Content-Type')).toBeNull()
+  })
+
+  it('c.json() preserves null JSON response semantics', async () => {
+    const res = c.json(null)
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Content-Type')).toMatch('application/json')
+    expect(await res.text()).toBe('null')
+  })
+
+  it('c.json() preserves object JSON response semantics', async () => {
+    const res = c.json({ message: 'hello' })
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Content-Type')).toMatch('application/json')
+    expect(await res.text()).toBe('{"message":"hello"}')
+  })
+
   it('c.html()', async () => {
     const res: Response = c.html('<h1>Hello! Hono!</h1>', 201, { 'X-Custom': 'Message' })
     expect(res.status).toBe(201)
@@ -160,7 +185,7 @@ describe('Context', () => {
 
   it('c.notFound()', async () => {
     const res = c.notFound()
-    expect(res).instanceOf(Response)
+    expect(res).toBeInstanceOf(Response)
   })
 
   it('Should set headers if already this.#headers is created by `c.header()`', async () => {
@@ -263,7 +288,7 @@ describe('Context', () => {
     c.status(202)
     expect(c.res.headers.get('X-Custom4')).toBe('Message4')
     expect(c.res.status).toBe(201)
-    expect(await res.text()).toBe('this is body')
+    expect(await c.res.clone().text()).toBe('this is body')
   })
 
   it('Inherit current status if not specified', async () => {

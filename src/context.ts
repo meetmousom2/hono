@@ -713,6 +713,9 @@ export class Context<
     arg?: U | ResponseOrInit<U>,
     headers?: HeaderRecord
   ): JSONRespondReturn<T, U> => {
+    if (object === undefined) {
+      return this.#newResponse(null, arg, headers) as JSONRespondReturn<T, U>
+    }
     return this.#newResponse(
       JSON.stringify(object),
       arg,
