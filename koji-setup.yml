@@ -1,10 +1,10 @@
 # koji-setup.yml — overrides auto-detected verify commands for the koji BUILD agent.
-# Uses vitest (the project's actual test runner) via bunx so no separate install needed.
+# bun:test is the only viable runner in macOS temp sandboxes (vitest/rolldown native bindings fail).
 verify:
   lint:
     - echo "lint skipped (ESLint native bindings fail in macOS temp sandboxes)"
   test:
-    - bunx vitest run src/context.test.ts
+    - bun test src/context.test.ts
   uat:
-    cmd: bunx vitest run src/context.test.ts
+    cmd: bun test src/context.test.ts
     required: false
