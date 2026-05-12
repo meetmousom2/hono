@@ -188,7 +188,7 @@ describe('Context', () => {
 
   it('c.notFound()', async () => {
     const res = c.notFound()
-    expect(res).toBeInstanceOf(Response)
+    expect(res).instanceOf(Response)
   })
 
   it('Should set headers if already this.#headers is created by `c.header()`', async () => {
@@ -280,7 +280,6 @@ describe('Context', () => {
       'x-custom3': 'Message3',
       'x-custom2': 'Message2-Override',
     })
-    const resClone = res.clone()
     expect(res.headers.get('x-Custom1')).toBe('Message1')
     expect(res.headers.get('x-Custom2')).toBe('Message2-Override')
     expect(res.headers.get('x-Custom3')).toBe('Message3')
@@ -292,7 +291,7 @@ describe('Context', () => {
     c.status(202)
     expect(c.res.headers.get('X-Custom4')).toBe('Message4')
     expect(c.res.status).toBe(201)
-    expect(await resClone.text()).toBe('this is body')
+    expect(await res.text()).toBe('this is body')
   })
 
   it('Inherit current status if not specified', async () => {
