@@ -70,6 +70,23 @@ describe('Context', () => {
     expect(res.headers.get('X-Custom')).toBe('Message')
   })
 
+  it('c.json() returns null for undefined', async () => {
+    const res = c.json(undefined)
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Content-Type')).toMatch('application/json')
+    expect(await res.text()).toBe('null')
+  })
+
+  it('c.json() returns null for null', async () => {
+    const res = c.json(null)
+    expect(await res.text()).toBe('null')
+  })
+
+  it('c.json() returns false for false', async () => {
+    const res = c.json(false)
+    expect(await res.text()).toBe('false')
+  })
+
   it('c.html()', async () => {
     const res: Response = c.html('<h1>Hello! Hono!</h1>', 201, { 'X-Custom': 'Message' })
     expect(res.status).toBe(201)
@@ -160,7 +177,7 @@ describe('Context', () => {
 
   it('c.notFound()', async () => {
     const res = c.notFound()
-    expect(res).instanceOf(Response)
+    expect(res).toBeInstanceOf(Response)
   })
 
   it('Should set headers if already this.#headers is created by `c.header()`', async () => {
@@ -258,7 +275,7 @@ describe('Context', () => {
     expect(res.status).toBe(201)
 
     // res is already set.
-    c.res = res
+    c.res = res.clone()
     c.header('X-Custom4', 'Message4')
     c.status(202)
     expect(c.res.headers.get('X-Custom4')).toBe('Message4')
