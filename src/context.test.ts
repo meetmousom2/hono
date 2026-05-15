@@ -160,7 +160,7 @@ describe('Context', () => {
 
   it('c.notFound()', async () => {
     const res = c.notFound()
-    expect(res).instanceOf(Response)
+    expect(res).toBeInstanceOf(Response)
   })
 
   it('Should set headers if already this.#headers is created by `c.header()`', async () => {
@@ -263,7 +263,7 @@ describe('Context', () => {
     c.status(202)
     expect(c.res.headers.get('X-Custom4')).toBe('Message4')
     expect(c.res.status).toBe(201)
-    expect(await res.text()).toBe('this is body')
+    expect(await c.res.text()).toBe('this is body')
   })
 
   it('Inherit current status if not specified', async () => {
