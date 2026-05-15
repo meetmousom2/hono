@@ -160,7 +160,7 @@ describe('Context', () => {
 
   it('c.notFound()', async () => {
     const res = c.notFound()
-    expect(res).instanceOf(Response)
+    expect(res).toBeInstanceOf(Response)
   })
 
   it('Should set headers if already this.#headers is created by `c.header()`', async () => {
@@ -258,7 +258,7 @@ describe('Context', () => {
     expect(res.status).toBe(201)
 
     // res is already set.
-    c.res = res
+    c.res = res.clone()
     c.header('X-Custom4', 'Message4')
     c.status(202)
     expect(c.res.headers.get('X-Custom4')).toBe('Message4')
